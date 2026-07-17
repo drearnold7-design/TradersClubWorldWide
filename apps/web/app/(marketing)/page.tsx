@@ -1,5 +1,6 @@
 // app/(marketing)/page.tsx
 import type { Metadata } from 'next';
+import TopBanner from '@/components/marketing/TopBanner';
 import Hero from '@/components/marketing/Hero';
 import Quiz from '@/components/marketing/Quiz';
 import FAQ from '@/components/marketing/FAQ';
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <main className="bg-ink-900">
+      <TopBanner />
       <Hero />
 
       {/* Meet Daniel Gamble, benefits, differentiators, testimonials sections

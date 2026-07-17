@@ -1,6 +1,7 @@
 // app/(marketing)/page.tsx
 import type { Metadata } from 'next';
 import Hero from '@/components/marketing/Hero';
+import IntroVideo from '@/components/marketing/IntroVideo';
 import Quiz from '@/components/marketing/Quiz';
 import FAQ from '@/components/marketing/FAQ';
 import Pricing from '@/components/marketing/Pricing';
@@ -23,11 +24,12 @@ export default function LandingPage() {
   return (
     <main className="bg-ink-900">
       <Hero />
+      <IntroVideo />
 
-      {/* Meet Daniel Gamble, benefits, differentiators, testimonials sections
-          follow the same component pattern as Hero/FAQ/Pricing above —
-          omitted here for length, built the same way with real bio/copy
-          once approved assets are provided. */}
+      {/* Benefits, differentiators, testimonials sections follow the same
+          component pattern as Hero/FAQ/Pricing above — omitted here for
+          length, built the same way with real bio/copy once approved
+          assets are provided. */}
 
       <Quiz />
       <Pricing />

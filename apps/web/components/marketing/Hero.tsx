@@ -18,7 +18,7 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
           className="font-mono text-xs uppercase tracking-[0.3em] text-gold-400"
         >
-          20 Seats · August 15–23 · Location Revealed Upon Deposit
+          20 Seats · August 15–23 · Punta Cana, Dominican Republic
         </motion.p>
 
         <motion.h1

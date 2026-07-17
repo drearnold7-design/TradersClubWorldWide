@@ -5,16 +5,19 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { stripe } from '@/lib/stripe/client';
+import { getStripe } from '@/lib/stripe/client';
 import type Stripe from 'stripe';
 import { headers } from 'next/headers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function POST(request: Request) {
+  // Constructed inside the handler, not at module scope, so a missing env
+  // var can't crash Next.js's build-time page-data collection.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const stripe = getStripe();
+
   const body = await request.text();
   const signature = headers().get('stripe-signature')!;
 

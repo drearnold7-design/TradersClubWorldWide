@@ -6,14 +6,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Service-role client — bypasses RLS deliberately, since anonymous
-// visitors have no auth session yet but must be able to create a lead.
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function POST(request: Request) {
+  // Service-role client — bypasses RLS deliberately, since anonymous
+  // visitors have no auth session yet but must be able to create a lead.
+  // Constructed inside the handler, not at module scope, so a missing env
+  // var can't crash Next.js's build-time page-data collection.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   const body = await request.json();
 
   const {

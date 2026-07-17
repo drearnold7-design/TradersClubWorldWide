@@ -6,15 +6,20 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Constructed inside each handler, not at module scope, so a missing env
+// var can't crash Next.js's build-time page-data collection.
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const supabase = getSupabase();
   const updates = await request.json();
 
   // Only allow known, safe fields to be updated through this endpoint
@@ -53,6 +58,7 @@ export async function GET(
   _request: Request,
   { params }: { params: { id: string } }
 ) {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('leads')
     .select('*, lead_tasks(*)')

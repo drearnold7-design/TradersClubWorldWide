@@ -7,14 +7,17 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { stripe } from '@/lib/stripe/client';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getStripe } from '@/lib/stripe/client';
 
 export async function POST(request: Request) {
+  // Constructed inside the handler, not at module scope, so a missing env
+  // var can't crash Next.js's build-time page-data collection.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const stripe = getStripe();
+
   const { eventId, profileId, paymentType, couponCode } = await request.json();
   // paymentType: 'deposit' | 'full'
 

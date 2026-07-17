@@ -11,14 +11,17 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { whop } from '@/lib/whop/client';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getWhop } from '@/lib/whop/client';
 
 export async function POST(request: Request) {
+  // Constructed inside the handler, not at module scope, so a missing env
+  // var can't crash Next.js's build-time page-data collection.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const whop = getWhop();
+
   const requestBodyText = await request.text();
   const headers = Object.fromEntries(request.headers);
 

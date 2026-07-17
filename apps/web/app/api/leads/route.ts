@@ -1,10 +1,12 @@
 // app/api/leads/route.ts
 // Receives quiz + contact form submissions from the landing page.
-// Writes to Supabase `leads` table, fires analytics event, and
-// (Phase 9 wiring) triggers the lead confirmation email/SMS.
+// Writes to Supabase `leads` table, fires analytics event, sends the lead a
+// confirmation email/SMS, and notifies the admin of the new signup.
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendLeadConfirmationEmail, sendAdminNewLeadEmail } from '@/lib/email/send';
+import { sendLeadConfirmationSms, sendAdminNewLeadSms } from '@/lib/sms/send';
 
 export async function POST(request: Request) {
   // Service-role client — bypasses RLS deliberately, since anonymous
@@ -76,8 +78,21 @@ export async function POST(request: Request) {
     metadata: { lead_id: data.id },
   });
 
-  // Phase 9 will call the email/SMS automation service here:
-  // await sendLeadConfirmation(data);
+  // Confirmation email/SMS to the lead, plus an admin notification.
+  // Each is independent — one provider failing (e.g. no Resend/Twilio key
+  // configured yet) shouldn't take down the others or fail the signup,
+  // since the lead is already saved at this point.
+  const notifications = await Promise.allSettled([
+    sendLeadConfirmationEmail({ firstName, lastName, email, phone }),
+    sendLeadConfirmationSms({ firstName, phone }),
+    sendAdminNewLeadEmail({ firstName, lastName, email, phone }),
+    sendAdminNewLeadSms({ firstName, lastName }),
+  ]);
+  notifications.forEach((result) => {
+    if (result.status === 'rejected') {
+      console.error('Lead notification failed:', result.reason);
+    }
+  });
 
   return NextResponse.json({ success: true, leadId: data.id });
 }

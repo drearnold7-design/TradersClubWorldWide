@@ -1,0 +1,38 @@
+[build]
+  base = "apps/web"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Stripe and Whop webhooks need raw request bodies — make sure these
+# routes are never cached or transformed by Netlify's edge
+[[headers]]
+  for = "/api/stripe/webhook"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/whop/webhook"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# Security headers applied site-wide
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.whop.com https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com https://www.clarity.ms; frame-src https://*.whop.com https://js.stripe.com; connect-src 'self' https://*.whop.com https://*.supabase.co; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'"
+
+[context.production.environment]
+  NEXT_PUBLIC_SITE_URL = "https://tradersclubworldwide.com"
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_SITE_URL = "https://deploy-preview.netlify.app"

@@ -3,6 +3,11 @@
 // webhook keeps a thin mirror of membership status in Supabase so the
 // CRM/admin dashboard and customer portal can show "has course access"
 // without calling the Whop API on every page load.
+//
+// Corrected against Whop's actual docs (docs.whop.com/developer/guides/webhooks):
+// verification method is `webhooks.unwrap(body, { headers })`, not `.verify(body, signature)`,
+// and the real event names are `membership.activated` / `membership.deactivated`,
+// not `membership.went_valid` / `membership.went_invalid`.
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -14,20 +19,21 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-  const body = await request.text();
-  const signature = request.headers.get('whop-signature') ?? '';
+  const requestBodyText = await request.text();
+  const headers = Object.fromEntries(request.headers);
 
-  let event: any;
+  let webhookData: any;
   try {
-    // whop.webhooks.verify throws if the signature doesn't match —
-    // never trust a payload that hasn't been verified against the secret
-    event = whop.webhooks.verify(body, signature);
+    // unwrap() verifies the signature AND parses the JSON in one call —
+    // it throws on a bad/missing signature, so a forged payload never
+    // reaches the code below.
+    webhookData = whop.webhooks.unwrap(requestBodyText, { headers });
   } catch (err) {
     console.error('Whop webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  const { action, data } = event;
+  const { type, data } = webhookData;
 
   // Match the Whop user to our profile by email. If they don't have a
   // profile yet (e.g. bought the course before ever visiting our site),
@@ -45,8 +51,8 @@ export async function POST(request: Request) {
     profileId = profile?.id ?? null;
   }
 
-  switch (action) {
-    case 'membership.went_valid':
+  switch (type) {
+    case 'membership.activated':
     case 'payment.succeeded': {
       await supabase.from('whop_memberships').upsert(
         {
@@ -69,7 +75,7 @@ export async function POST(request: Request) {
       await supabase.from('analytics_events').insert({
         event_name: 'whop_course_purchased',
         profile_id: profileId,
-        metadata: { whop_action: action, access_pass: data.access_pass?.id },
+        metadata: { whop_event_type: type, access_pass: data.access_pass?.id },
       });
 
       // Phase 8 — award a referral reward if this customer was referred
@@ -83,7 +89,7 @@ export async function POST(request: Request) {
       break;
     }
 
-    case 'membership.went_invalid': {
+    case 'membership.deactivated': {
       await supabase
         .from('whop_memberships')
         .update({ status: 'expired' })
@@ -92,6 +98,8 @@ export async function POST(request: Request) {
     }
 
     default:
+      // Other event types (refund.created, dispute.created, entry.created, etc.)
+      // aren't acted on yet — safe to ignore rather than error.
       break;
   }
 

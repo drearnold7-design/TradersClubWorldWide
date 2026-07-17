@@ -9,7 +9,6 @@ export default function AdminDashboardPage() {
         Traders Club Worldwide — live business overview
       </p>
       <div className="mt-6">
-        {/* @ts-expect-error Server Component */}
         <DashboardWidgets />
       </div>
     </div>

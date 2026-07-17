@@ -1,5 +1,6 @@
 // app/(portal)/layout.tsx
 import Link from 'next/link';
+import Image from 'next/image';
 
 const NAV = [
   { href: '/dashboard', label: 'Overview' },
@@ -15,7 +16,15 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     <div className="min-h-screen bg-ink-900 text-ivory-50">
       <div className="mx-auto flex max-w-6xl gap-8 px-6 py-10">
         <nav className="w-48 shrink-0">
-          <p className="mb-6 font-serif text-lg text-gold-400">Traders Club</p>
+          <div className="mb-6 flex items-center gap-2">
+            <Image
+              src="/images/crest-emblem.png"
+              alt="The Sniper Investor crest"
+              width={28}
+              height={16}
+            />
+            <p className="font-serif text-lg text-gold-400">Traders Club</p>
+          </div>
           <ul className="space-y-1">
             {NAV.map((item) => (
               <li key={item.href}>

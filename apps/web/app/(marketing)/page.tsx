@@ -1,5 +1,7 @@
 // app/(marketing)/page.tsx
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import TopBanner from '@/components/marketing/TopBanner';
 import Hero from '@/components/marketing/Hero';
 import IntroVideo from '@/components/marketing/IntroVideo';
 import Quiz from '@/components/marketing/Quiz';
@@ -23,6 +25,7 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <main className="bg-ink-900">
+      <TopBanner />
       <Hero />
       <IntroVideo />
 
@@ -36,6 +39,13 @@ export default function LandingPage() {
       <FAQ />
 
       <footer className="border-t border-ivory-200/10 px-6 py-12 text-center text-xs text-ivory-200/40">
+        <Image
+          src="/images/crest-emblem.png"
+          alt="The Sniper Investor crest"
+          width={48}
+          height={27}
+          className="mx-auto mb-4 opacity-80"
+        />
         <p className="mx-auto max-w-2xl">
           Traders Club Worldwide provides trading education for informational
           purposes only. Nothing on this site is financial advice. Trading

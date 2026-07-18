@@ -53,7 +53,13 @@ function LoginForm() {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { first_name: firstName, last_name: lastName } },
+        options: {
+          data: { first_name: firstName, last_name: lastName },
+          // Without this, the confirmation email redirects to whatever
+          // "Site URL" is configured in Supabase's dashboard, which
+          // defaults to localhost and 404s in production.
+          emailRedirectTo: `${window.location.origin}/login`,
+        },
       });
       setLoading(false);
       if (signUpError) {

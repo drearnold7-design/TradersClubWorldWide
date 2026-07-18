@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import TopBanner from '@/components/marketing/TopBanner';
+import PageViewTracker from '@/components/marketing/PageViewTracker';
 import Hero from '@/components/marketing/Hero';
 import IntroVideo from '@/components/marketing/IntroVideo';
 import Quiz from '@/components/marketing/Quiz';
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <main className="bg-ink-900">
+      <PageViewTracker />
       <TopBanner />
       <Hero />
       <IntroVideo />

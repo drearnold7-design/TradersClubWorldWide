@@ -15,6 +15,8 @@ async function getDashboardStats() {
     { data: paymentsMonth },
     { data: bookings },
     { count: openTickets },
+    { count: totalWebsiteVisits },
+    { count: websiteVisitsToday },
   ] = await Promise.all([
     supabase.from('leads').select('*', { count: 'exact', head: true }).gte('created_at', startOfToday.toISOString()),
     supabase.from('leads').select('*', { count: 'exact', head: true }),
@@ -22,6 +24,8 @@ async function getDashboardStats() {
     supabase.from('payments').select('amount').eq('status', 'succeeded').gte('created_at', startOfMonth.toISOString()),
     supabase.from('bookings').select('trip_status, balance_due'),
     supabase.from('support_tickets').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+    supabase.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'page_view'),
+    supabase.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'page_view').gte('created_at', startOfToday.toISOString()),
   ]);
 
   const revenueToday = (paymentsToday ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
@@ -39,6 +43,8 @@ async function getDashboardStats() {
     bookingsCount,
     conversionRate,
     openTickets: openTickets ?? 0,
+    totalWebsiteVisits: totalWebsiteVisits ?? 0,
+    websiteVisitsToday: websiteVisitsToday ?? 0,
   };
 }
 
@@ -46,6 +52,8 @@ export default async function DashboardWidgets() {
   const stats = await getDashboardStats();
 
   const cards = [
+    { label: 'Website Visits (Total)', value: stats.totalWebsiteVisits },
+    { label: 'Website Visits Today', value: stats.websiteVisitsToday },
     { label: 'New Leads Today', value: stats.newLeadsToday },
     { label: 'Revenue Today', value: `$${stats.revenueToday.toLocaleString()}` },
     { label: 'Revenue This Month', value: `$${stats.revenueMonth.toLocaleString()}` },

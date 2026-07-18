@@ -22,6 +22,7 @@ export default async function AnalyticsPage({
   ]);
 
   const funnel = {
+    websiteVisits: (events ?? []).filter((e) => e.event_name === 'page_view').length,
     quizStarted: (events ?? []).filter((e) => e.event_name === 'quiz_started').length,
     quizCompleted: (events ?? []).filter((e) => e.event_name === 'quiz_completed').length,
     leadsCaptured: (events ?? []).filter((e) => e.event_name === 'lead_captured').length,
@@ -57,8 +58,9 @@ export default async function AnalyticsPage({
       {/* Funnel */}
       <section className="mt-8">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Conversion Funnel</h2>
-        <div className="mt-3 grid grid-cols-5 gap-3">
+        <div className="mt-3 grid grid-cols-6 gap-3">
           {[
+            { label: 'Website Visits', value: funnel.websiteVisits },
             { label: 'Quiz Started', value: funnel.quizStarted },
             { label: 'Quiz Completed', value: funnel.quizCompleted },
             { label: 'Leads Captured', value: funnel.leadsCaptured },

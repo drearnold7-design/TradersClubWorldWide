@@ -20,6 +20,7 @@ declare global {
 }
 
 type TrackedEvent =
+  | 'page_view'
   | 'quiz_started'
   | 'quiz_completed'
   | 'lead_captured'

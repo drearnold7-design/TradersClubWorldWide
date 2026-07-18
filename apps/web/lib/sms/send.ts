@@ -23,15 +23,24 @@ export async function sendLeadConfirmationSms(lead: { firstName: string; phone: 
 }
 
 // Notifies the business owner/admin by text whenever a new lead comes in.
-// No-op if ADMIN_NOTIFICATION_PHONE isn't configured.
+// Sends to both ADMIN_NOTIFICATION_PHONE and ADMIN_NOTIFICATION_PHONE_2 --
+// either (or both) can be left unset with no error, just skipped.
 export async function sendAdminNewLeadSms(lead: { firstName: string; lastName?: string }) {
-  const adminPhone = process.env.ADMIN_NOTIFICATION_PHONE;
-  if (!adminPhone) return;
+  const adminPhones = [process.env.ADMIN_NOTIFICATION_PHONE, process.env.ADMIN_NOTIFICATION_PHONE_2].filter(
+    (phone): phone is string => Boolean(phone)
+  );
+  if (adminPhones.length === 0) return;
 
   const client = getTwilio();
-  await client.messages.create({
-    body: `New lead: ${lead.firstName} ${lead.lastName ?? ''}`.trim(),
-    from: process.env.TWILIO_PHONE_NUMBER!,
-    to: toE164(adminPhone),
-  });
+  const body = `New lead: ${lead.firstName} ${lead.lastName ?? ''}`.trim();
+
+  await Promise.all(
+    adminPhones.map((phone) =>
+      client.messages.create({
+        body,
+        from: process.env.TWILIO_PHONE_NUMBER!,
+        to: toE164(phone),
+      })
+    )
+  );
 }

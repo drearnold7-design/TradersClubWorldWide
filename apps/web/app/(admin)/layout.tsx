@@ -1,17 +1,25 @@
 // app/(admin)/layout.tsx
 import Link from 'next/link';
 import Image from 'next/image';
-
-const NAV = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/crm', label: 'CRM' },
-  { href: '/admin/pipeline', label: 'Pipeline' },
-  { href: '/admin/analytics', label: 'Analytics' },
-  { href: '/admin/referrals', label: 'Referrals' },
-  { href: '/admin/content-ideas', label: 'Content Ideas' },
-];
+import { headers } from 'next/headers';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  // On the admin subdomain, middleware already rewrites "/crm" -> "/admin/crm"
+  // transparently, so nav links can stay short there instead of showing a
+  // redundant "/admin" in a URL that's already on the admin subdomain.
+  const host = headers().get('host') ?? '';
+  const isAdminHost = host.startsWith('admin.') || host.startsWith('admin-');
+  const base = isAdminHost ? '' : '/admin';
+
+  const NAV = [
+    { href: base || '/', label: 'Dashboard' },
+    { href: `${base}/crm`, label: 'CRM' },
+    { href: `${base}/pipeline`, label: 'Pipeline' },
+    { href: `${base}/analytics`, label: 'Analytics' },
+    { href: `${base}/referrals`, label: 'Referrals' },
+    { href: `${base}/content-ideas`, label: 'Content Ideas' },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="mx-auto flex max-w-7xl gap-8 px-6 py-10">

@@ -13,7 +13,10 @@ const supabase = createBrowserClient(
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/dashboard';
+  // On the admin subdomain, "/" rewrites to the admin home in middleware;
+  // everywhere else, logged-in users land in the customer portal.
+  const isAdminHost = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+  const redirectTo = searchParams.get('redirect') || (isAdminHost ? '/' : '/dashboard');
 
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
   const [firstName, setFirstName] = useState('');

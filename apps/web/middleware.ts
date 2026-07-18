@@ -1,6 +1,12 @@
 // apps/web/middleware.ts
 // Phase 2 — Route protection by role
 // Runs on every request to (portal) and (admin) route groups.
+//
+// The admin section also lives on its own subdomain (admin.<domain>) so it
+// reads as a genuinely separate website rather than a path on the public
+// site. Visiting admin.<domain>/crm transparently rewrites to /admin/crm
+// on the same deployment -- no second app/deploy to maintain. The public
+// domain, in turn, refuses to serve /admin directly.
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -22,8 +28,37 @@ const ROUTE_RULES: { prefix: string; allow: Role[] }[] = [
   { prefix: '/profile', allow: ['customer', 'affiliate', ...STAFF_ROLES] },
 ];
 
+// Paths that should never be rewritten, on either domain.
+const PASSTHROUGH_PREFIXES = ['/api', '/_next', '/login', '/unauthorized', '/r/'];
+
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const hostname = request.headers.get('host') ?? '';
+  const isAdminHost = hostname.startsWith('admin.') || hostname.startsWith('admin-');
+  const originalPath = request.nextUrl.pathname;
+  const isPassthrough = PASSTHROUGH_PREFIXES.some((p) => originalPath.startsWith(p));
+
+  // On the public domain, /admin isn't reachable at all -- it only exists
+  // on the admin subdomain.
+  if (!isAdminHost && !isPassthrough && originalPath.startsWith('/admin')) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // On the admin subdomain, every path is transparently rewritten under
+  // /admin so visitors never type "/admin" themselves.
+  let rewrittenUrl: URL | null = null;
+  if (isAdminHost && !isPassthrough && !originalPath.startsWith('/admin')) {
+    rewrittenUrl = request.nextUrl.clone();
+    rewrittenUrl.pathname = `/admin${originalPath === '/' ? '' : originalPath}`;
+  }
+
+  const path = rewrittenUrl?.pathname ?? originalPath;
+  const response = rewrittenUrl ? NextResponse.rewrite(rewrittenUrl) : NextResponse.next();
+
+  // Most requests (marketing pages, webhooks, static-ish routes) hit no
+  // rule at all -- skip the Supabase round-trip entirely for those instead
+  // of auth-checking every single page load now that the matcher is broad.
+  const matchedRule = ROUTE_RULES.find((r) => path.startsWith(r.prefix));
+  if (!matchedRule) return response;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,11 +75,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const matchedRule = ROUTE_RULES.find((r) => path.startsWith(r.prefix));
-
-  if (!matchedRule) return response; // public route, no restriction
 
   if (!user) {
     const loginUrl = new URL('/login', request.url);
@@ -68,13 +98,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/admin/:path*',
-    '/dashboard/:path*',
-    '/trip/:path*',
-    '/courses/:path*',
-    '/referrals/:path*',
-    '/support/:path*',
-    '/profile/:path*',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/|videos/).*)'],
 };

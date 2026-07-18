@@ -48,5 +48,3 @@ comment on table courses is 'DEPRECATED as of Whop integration — course conten
 comment on table lessons is 'DEPRECATED as of Whop integration.';
 comment on table lesson_progress is 'DEPRECATED as of Whop integration — Whop tracks its own lesson/progress data natively.';
 comment on table course_enrollments is 'DEPRECATED as of Whop integration — see whop_memberships instead.';
-comment on table lesson_bookmarks is 'DEPRECATED as of Whop integration.';
-comment on table certificates is 'DEPRECATED as of Whop integration — Whop issues its own completion tracking per product, if enabled.';

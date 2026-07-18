@@ -2,11 +2,11 @@
 // Phase 2 — Route protection by role
 // Runs on every request to (portal) and (admin) route groups.
 //
-// The admin section also lives on its own subdomain (admin.<domain>) so it
-// reads as a genuinely separate website rather than a path on the public
-// site. Visiting admin.<domain>/crm transparently rewrites to /admin/crm
-// on the same deployment -- no second app/deploy to maintain. The public
-// domain, in turn, refuses to serve /admin directly.
+// /admin is reachable directly on the main site (protected by the role
+// check below, same as everything else here) -- that's the simple path.
+// If a separate admin.<domain> subdomain, or a second admin-* Netlify
+// site, ever gets set up on top of this, requests to that host
+// transparently rewrite to /admin so nothing else has to change.
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -36,12 +36,6 @@ export async function middleware(request: NextRequest) {
   const isAdminHost = hostname.startsWith('admin.') || hostname.startsWith('admin-');
   const originalPath = request.nextUrl.pathname;
   const isPassthrough = PASSTHROUGH_PREFIXES.some((p) => originalPath.startsWith(p));
-
-  // On the public domain, /admin isn't reachable at all -- it only exists
-  // on the admin subdomain.
-  if (!isAdminHost && !isPassthrough && originalPath.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
 
   // On the admin subdomain, every path is transparently rewritten under
   // /admin so visitors never type "/admin" themselves.

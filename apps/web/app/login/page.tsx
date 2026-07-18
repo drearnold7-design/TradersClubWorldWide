@@ -1,7 +1,7 @@
 // app/login/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 
@@ -11,6 +11,14 @@ const supabase = createBrowserClient(
 );
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-ink-900" />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   // On the admin subdomain, "/" rewrites to the admin home in middleware;

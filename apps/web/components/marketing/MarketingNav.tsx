@@ -10,6 +10,7 @@ const TABS = [
   { href: '/', label: 'Home' },
   { href: '/reviews', label: 'Reviews' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/classes', label: 'Classes' },
 ];
 
 export default function MarketingNav() {

@@ -16,15 +16,16 @@ type Package = {
   priceNote?: string;
   tagline: string;
   highlight?: boolean;
+  addOnNote?: string;
   features: { label: string; included: boolean }[];
 };
 
 const PACKAGES: Package[] = [
   {
     name: 'Companion Pass',
-    price: '$2,995',
-    priceNote: 'starting at',
+    price: '$1,500',
     tagline: 'The full Executive experience, priced for your second traveler.',
+    addOnNote: 'Add-on only — this package cannot be purchased on its own. It must accompany an Executive Trader Pass.',
     features: [
       { label: 'Full 8-day Punta Cana itinerary', included: true },
       { label: 'Luxury networking dinners', included: true },
@@ -68,7 +69,7 @@ const PACKAGES: Package[] = [
 ];
 
 const maxPrice = 8995;
-const priceValues = [2995, 4995, 8995];
+const priceValues = [1500, 4995, 8995];
 
 export default function PricingPage() {
   return (
@@ -137,6 +138,12 @@ export default function PricingPage() {
                 <span className="font-serif text-4xl text-ivory-50">{pkg.price}</span>
               </p>
 
+              {pkg.addOnNote && (
+                <p className="mt-3 rounded-lg border border-gold-400/30 bg-gold-500/5 px-3 py-2 text-xs text-gold-300">
+                  {pkg.addOnNote}
+                </p>
+              )}
+
               <ul className="mt-6 flex-1 space-y-3 text-sm">
                 {pkg.features.map((f) => (
                   <li key={f.label} className={`flex items-start gap-2 ${f.included ? 'text-ivory-200/90' : 'text-ivory-200/30 line-through'}`}>
@@ -156,7 +163,7 @@ export default function PricingPage() {
                     : 'border border-ivory-200/20 text-ivory-50 hover:bg-ink-800'
                 }`}
               >
-                Apply for this package
+                {pkg.addOnNote ? 'Apply with an Executive Trader Pass' : 'Apply for this package'}
               </Link>
             </div>
           ))}

@@ -50,7 +50,7 @@ const QUESTIONS = [
     question: 'Which package interests you most?',
     options: [
       'Executive Trader Pass — $4,995',
-      'Companion Pass — from $2,995',
+      'Companion Pass (add-on for a second person) — $1,500',
       'Full Training Bundle (bring a partner) — $8,995',
       'Not sure yet',
     ],

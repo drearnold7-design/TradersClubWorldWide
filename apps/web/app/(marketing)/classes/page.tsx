@@ -45,7 +45,7 @@ const CLASSES: ClassOption[] = [
   },
   {
     name: 'Technical Analysis 5 Day Class',
-    price: '$3K',
+    price: '$3,995',
     priceNote: '/accelerator program',
     highlight: true,
     features: [

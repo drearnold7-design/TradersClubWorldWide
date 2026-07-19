@@ -1,6 +1,8 @@
 // components/marketing/Pricing.tsx
 'use client';
 
+import Link from 'next/link';
+
 export default function Pricing() {
   return (
     <section className="mx-auto max-w-5xl px-6 py-24">
@@ -12,16 +14,23 @@ export default function Pricing() {
           Twenty seats. One cohort.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-ivory-200/70">
-          Full pricing and payment plan options are sent after your quiz
-          results — this keeps the group intentional rather than
-          first-come-first-served.
+          Three ways to join, from the Companion Pass to the full training
+          bundle — see exactly what's included in each.
         </p>
-        <a
-          href="#quiz"
-          className="mt-8 inline-block rounded-full bg-gold-500 px-10 py-4 font-medium text-ink-900 transition hover:bg-gold-400"
-        >
-          Check seat availability
-        </a>
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href="/pricing"
+            className="rounded-full bg-gold-500 px-10 py-4 font-medium text-ink-900 transition hover:bg-gold-400"
+          >
+            See Pricing & Packages
+          </Link>
+          <a
+            href="#quiz"
+            className="rounded-full border border-ivory-200/20 px-10 py-4 font-medium text-ivory-50 transition hover:bg-ink-800"
+          >
+            Check seat availability
+          </a>
+        </div>
         <p className="mt-6 text-xs text-ivory-200/40">
           Deposit required to reserve. Balance due on a payment plan ahead of
           departure. Trading involves risk; no profit is guaranteed.

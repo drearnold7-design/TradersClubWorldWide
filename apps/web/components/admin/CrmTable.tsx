@@ -9,6 +9,8 @@ type QuizAnswers = {
   motivation?: string;
   investingRange?: string;
   wantsLive?: string;
+  packageInterest?: string;
+  readiness?: string;
 };
 
 type Lead = {
@@ -80,6 +82,7 @@ export default function CrmTable() {
     const header = [
       'First Name', 'Last Name', 'Email', 'Phone', 'City', 'State',
       'Stage', 'Source', 'Experience Level',
+      'Package Interest', 'Ready to Book?',
       'Quiz: Traded Before', 'Quiz: Motivation', 'Quiz: Investing Range', 'Quiz: Wants Live',
       'Marketing Consent', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'UTM Content', 'UTM Term',
       'Referral Code Used', 'Tags', 'Notes', 'Created', 'Last Contacted',
@@ -90,6 +93,7 @@ export default function CrmTable() {
         [
           l.first_name, l.last_name, l.email, l.phone, l.city, l.state,
           l.pipeline_stage, l.lead_source, l.experience_level,
+          l.quiz_answers?.packageInterest, l.quiz_answers?.readiness,
           l.quiz_answers?.experience, l.quiz_answers?.motivation, l.quiz_answers?.investingRange, l.quiz_answers?.wantsLive,
           l.marketing_consent ? 'yes' : 'no',
           l.utm_source, l.utm_medium, l.utm_campaign, l.utm_content, l.utm_term,
@@ -152,6 +156,7 @@ export default function CrmTable() {
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">Stage</th>
+              <th className="px-4 py-3">Package</th>
               <th className="px-4 py-3">Source</th>
               <th className="px-4 py-3">Experience</th>
               <th className="px-4 py-3">Created</th>
@@ -159,9 +164,9 @@ export default function CrmTable() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className="px-4 py-6 text-center text-slate-500">Loading…</td></tr>
+              <tr><td colSpan={7} className="px-4 py-6 text-center text-slate-500">Loading…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={6} className="px-4 py-6 text-center text-slate-500">No leads match your filters.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-6 text-center text-slate-500">No leads match your filters.</td></tr>
             ) : (
               filtered.map((l) => (
                 <tr
@@ -178,6 +183,9 @@ export default function CrmTable() {
                     <span className="rounded-full bg-slate-800 px-2 py-1 text-xs capitalize">
                       {l.pipeline_stage?.replace(/_/g, ' ')}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-slate-300">
+                    {l.quiz_answers?.packageInterest ?? '—'}
                   </td>
                   <td className="px-4 py-3 capitalize">{l.lead_source}</td>
                   <td className="px-4 py-3">{l.experience_level}</td>
@@ -219,6 +227,12 @@ export default function CrmTable() {
               <Detail label="Stage" value={selectedLead.pipeline_stage?.replace(/_/g, ' ')} />
               <Detail label="Lead Source" value={selectedLead.lead_source} />
               <Detail label="Experience Level" value={selectedLead.experience_level} />
+
+              <div className="rounded-lg border border-emerald-700/40 bg-emerald-900/10 px-3 py-2">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-emerald-500">Package Interest</p>
+                <Detail label="Package" value={selectedLead.quiz_answers?.packageInterest} />
+                <Detail label="Ready to book?" value={selectedLead.quiz_answers?.readiness} />
+              </div>
 
               <div className="border-t border-slate-800 pt-3">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Quiz Answers</p>

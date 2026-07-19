@@ -10,6 +10,8 @@ type QuizAnswers = {
   motivation?: string;
   investingRange?: string;
   wantsLive?: string;
+  packageInterest?: string;
+  readiness?: string;
 };
 
 type LeadForm = {
@@ -43,10 +45,25 @@ const QUESTIONS = [
     question: 'Want to learn directly from an experienced trader, live?',
     options: ['Yes', 'Absolutely'],
   },
+  {
+    key: 'packageInterest' as const,
+    question: 'Which package interests you most?',
+    options: [
+      'Executive Trader Pass — $4,995',
+      'Companion Pass — from $2,995',
+      'Full Training Bundle (bring a partner) — $8,995',
+      'Not sure yet',
+    ],
+  },
+  {
+    key: 'readiness' as const,
+    question: 'How ready are you to reserve your seat?',
+    options: ['Ready to book now', 'Within the next 2 weeks', 'Just exploring for now'],
+  },
 ];
 
 export default function Quiz() {
-  const [step, setStep] = useState(0); // 0..3 = questions, 4 = personalized msg, 5 = form, 6 = done
+  const [step, setStep] = useState(0); // 0..5 = questions, 6 = personalized msg, 7 = form, 8 = done
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [form, setForm] = useState<LeadForm>({
     firstName: '',
@@ -82,18 +99,18 @@ export default function Quiz() {
       });
       track('quiz_completed', { experience: answers.experience });
       track('lead_captured', { experience_level: answers.experience });
-      setStep(6);
+      setStep(8);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const progress = Math.min(step, 4) / 4;
+  const progress = Math.min(step, 6) / 6;
 
   return (
     <section id="quiz" className="mx-auto max-w-2xl px-6 py-24">
       <div className="rounded-2xl border border-ivory-200/10 bg-ink-800/60 p-8 backdrop-blur-sm md:p-12">
-        {step < 5 && (
+        {step < 7 && (
           <div className="mb-8 h-1 w-full overflow-hidden rounded-full bg-ivory-200/10">
             <motion.div
               className="h-full bg-gold-500"
@@ -104,7 +121,7 @@ export default function Quiz() {
         )}
 
         <AnimatePresence mode="wait">
-          {step < 4 && (
+          {step < 6 && (
             <motion.div
               key={step}
               initial={{ opacity: 0, x: 24 }}
@@ -129,7 +146,7 @@ export default function Quiz() {
             </motion.div>
           )}
 
-          {step === 4 && (
+          {step === 6 && (
             <motion.div
               key="personalized"
               initial={{ opacity: 0 }}
@@ -141,10 +158,10 @@ export default function Quiz() {
               </h3>
               <p className="mt-3 text-ivory-200/70">
                 Enter your info and we'll send full trip details, pricing, and
-                next steps for the {answers.experience?.toLowerCase()} track.
+                next steps for the {answers.packageInterest ?? 'right'} package.
               </p>
               <button
-                onClick={() => setStep(5)}
+                onClick={() => setStep(7)}
                 className="mt-8 rounded-full bg-gold-500 px-8 py-3 font-medium text-ink-900 transition hover:bg-gold-400"
               >
                 Continue
@@ -152,7 +169,7 @@ export default function Quiz() {
             </motion.div>
           )}
 
-          {step === 5 && (
+          {step === 7 && (
             <motion.form
               key="form"
               initial={{ opacity: 0 }}
@@ -230,7 +247,7 @@ export default function Quiz() {
             </motion.form>
           )}
 
-          {step === 6 && (
+          {step === 8 && (
             <motion.div
               key="done"
               initial={{ opacity: 0 }}

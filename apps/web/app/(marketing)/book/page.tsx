@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { track } from '@/lib/analytics/track';
+import MarketingNav from '@/components/marketing/MarketingNav';
 
 export default function BookPage() {
   const [paymentType, setPaymentType] = useState<'deposit' | 'full'>('deposit');
@@ -39,7 +40,9 @@ export default function BookPage() {
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-lg bg-ink-900 px-6 py-24 text-ivory-50">
+    <main className="min-h-screen bg-ink-900 text-ivory-50">
+      <MarketingNav />
+      <div className="mx-auto max-w-lg px-6 py-24">
       <h1 className="font-serif text-3xl">Reserve your seat</h1>
       <p className="mt-2 text-ivory-200/70">
         Trade & Travel Experience · August 15–23 · 20 seats total
@@ -96,6 +99,7 @@ export default function BookPage() {
         Payments processed securely by Stripe. Trading involves risk; no
         profit is guaranteed.
       </p>
+      </div>
     </main>
   );
 }

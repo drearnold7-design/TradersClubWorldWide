@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import MarketingNav from '@/components/marketing/MarketingNav';
+import PageViewTracker from '@/components/marketing/PageViewTracker';
 
 export const metadata: Metadata = {
   title: 'Pricing & Packages — Traders Club Worldwide',
@@ -72,6 +73,7 @@ const priceValues = [2995, 4995, 8995];
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-ink-900">
+      <PageViewTracker />
       <MarketingNav />
 
       <section className="mx-auto max-w-4xl px-6 pt-20 pb-12 text-center">

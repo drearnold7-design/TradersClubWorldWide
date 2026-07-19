@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { track } from '@/lib/analytics/track';
 import MarketingNav from '@/components/marketing/MarketingNav';
+import PageViewTracker from '@/components/marketing/PageViewTracker';
 
 export default function BookPage() {
   const [paymentType, setPaymentType] = useState<'deposit' | 'full'>('deposit');
@@ -41,6 +42,7 @@ export default function BookPage() {
 
   return (
     <main className="min-h-screen bg-ink-900 text-ivory-50">
+      <PageViewTracker />
       <MarketingNav />
       <div className="mx-auto max-w-lg px-6 py-24">
       <h1 className="font-serif text-3xl">Reserve your seat</h1>

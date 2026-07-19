@@ -1,6 +1,7 @@
 // app/(marketing)/classes/page.tsx
 import type { Metadata } from 'next';
 import MarketingNav from '@/components/marketing/MarketingNav';
+import PageViewTracker from '@/components/marketing/PageViewTracker';
 
 export const metadata: Metadata = {
   title: 'Classes & Discord Access — Traders Club Worldwide',
@@ -85,6 +86,7 @@ const CLASSES: ClassOption[] = [
 export default function ClassesPage() {
   return (
     <main className="min-h-screen bg-ink-900">
+      <PageViewTracker />
       <MarketingNav />
 
       <section className="mx-auto max-w-4xl px-6 pt-20 pb-12 text-center">

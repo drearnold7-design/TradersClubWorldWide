@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import MarketingNav from '@/components/marketing/MarketingNav';
+import PageViewTracker from '@/components/marketing/PageViewTracker';
 
 const SCREENSHOTS = [
   { src: '/images/reviews/june-profits-1.png', alt: 'June profits shared in our private Discord by students' },
@@ -26,6 +27,7 @@ export default function ReviewsPage() {
 
   return (
     <main className="min-h-screen bg-ink-900">
+      <PageViewTracker />
       <MarketingNav />
 
       <section className="mx-auto max-w-5xl px-6 pt-20 pb-12 text-center">
@@ -126,7 +128,7 @@ export default function ReviewsPage() {
               src={lightbox}
               alt="June profits shared in our private Discord by students"
               width={1125}
-              height={1946}
+              height={2076}
               className="h-auto w-full rounded-xl"
             />
           </div>
